@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 
 	log "github.com/Sirupsen/logrus"
@@ -39,14 +40,24 @@ var qrbuild = &cobra.Command{
 	Short: "Creates a QR image from a Dockerfile ",
 	Run: func(cmd *cobra.Command, args []string) {
 		if dockerfile == "" {
-			log.Debugf("No Dockerfile specified, looking in current directory")
+			log.Info("No Dockerfile specified, looking in current directory for ./dockerfile")
+			dockerfile = "./dockerfile"
+
 		}
+
+		b, err := ioutil.ReadFile(dockerfile)
+		if err != nil {
+			log.Fatalf("%v\n", err)
+		}
+
+		contents := string(b)
+
 		if qrfile == "" {
 			log.Debugf("No output QR file specified, using default")
 			qrfile = "dockerfile.png"
 		}
 
-		err := qre.WriteFile("test", qre.Medium, 256, qrfile)
+		err = qre.WriteFile(contents, qre.Medium, 256, qrfile)
 		if err != nil {
 			log.Fatalf("%v\n", err)
 		}
@@ -58,15 +69,12 @@ var qrimport = &cobra.Command{
 	Use:   "qrimport",
 	Short: "Creates a QR image from a Dockerfile ",
 	Run: func(cmd *cobra.Command, args []string) {
-		if dockerfile == "" {
-			log.Debugf("No Dockerfile specified, looking in current directory")
-		}
 		if qrfile == "" {
-			log.Debugf("No output QR file specified, using default")
+			// Default to default QR code image
 			qrfile = "dockerfile.png"
 		}
 
-		fi, err := os.Open("dockerfile.png")
+		fi, err := os.Open(qrfile)
 		if err != nil {
 			log.Fatalf("%v\n", err)
 		}
