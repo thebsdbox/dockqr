@@ -1,0 +1,6 @@
+#Start from Scratch
+FROM scratch
+#Copy binary
+COPY dockqr dockqr
+#Run binary
+CMD ["./dockqr"]
