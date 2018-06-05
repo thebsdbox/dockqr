@@ -18,6 +18,7 @@ func init() {
 	dockerqr.AddCommand(qrimport)
 	qrbuild.Flags().StringVarP(&dockerfile, "dockerfile", "d", os.Getenv("QR_DOCKERFILE"), "Path to a dockerfile")
 	qrbuild.Flags().StringVarP(&qrfile, "qrfile", "q", os.Getenv("QR_QRFILE"), "Path to a QR image")
+	qrimport.Flags().StringVarP(&qrfile, "qrfile", "q", os.Getenv("QR_QRFILE"), "Path to a QR image")
 
 }
 
@@ -57,7 +58,7 @@ var qrbuild = &cobra.Command{
 			qrfile = "dockerfile.png"
 		}
 
-		err = qre.WriteFile(contents, qre.Medium, 256, qrfile)
+		err = qre.WriteFile(contents, qre.Highest, 256, qrfile)
 		if err != nil {
 			log.Fatalf("%v\n", err)
 		}
